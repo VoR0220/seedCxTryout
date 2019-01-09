@@ -20,7 +20,7 @@
         },
         {
             "name": "gemini",
-            "url": "wss://api.gemini.com/v1/marketdata/btcusd"
+            "url": "wss://api.gemini.com/v1/marketdata/btcusd/?top_of_book=true"
         },
         {
             "name": "bitfinex",

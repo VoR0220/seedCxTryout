@@ -13,7 +13,12 @@ describe('websocket unit tests', (done) => {
     });
 
     it('should filter out unwanted values in an update', async() => {
-        toTestUtils.inputPriceToRedis([])
+        toTestUtils.inputPriceToRedis(["hello", "hb"], 'bitfinex');
+        let expectedVal = await getAsync('bitfinex');
+        expect(expectedVal).to.equal(null);
+        toTestUtils.inputPriceToRedis({someValue: "hey hey heyyyyy", anotherValue: "wussah wussah wussah wussuuuuup", finalVal: "bitconneeeeect!!!"}, 'bitfinex');
+        expectedVal = await getAsync('bitfinex');
+        expect(expectedVal).to.equal(null);
     });
 })
 

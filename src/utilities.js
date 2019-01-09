@@ -19,13 +19,11 @@ client.on("error", (err) => {
 function inputPriceToRedis(data, name) {
     switch (name) {
         case "coinbase":
-            console.log("Hit coinbase first");
             firstCoinbase = true;
             client.set("coinbase", data["price"]);
             break;
         case "gemini":
             // every single response i've seen so far indicates there's only one event in any log
-            console.log("hit gemini first");
             firstGemini = true;
             client.set("gemini", data.events[0].price);
             break;
@@ -44,21 +42,23 @@ function inputPriceToRedis(data, name) {
 
 async function getMaxPrice() {
     const coinbasePrice = parseFloat(await getAsync('coinbase')).toFixed(2);
-    console.log("coinbasePrice: ", coinbasePrice);
+    //console.log("coinbasePrice: ", coinbasePrice);
     const geminiPrice = parseFloat(await getAsync('gemini')).toFixed(2);
-    console.log("geminiPrice: ", geminiPrice);
+    //console.log("geminiPrice: ", geminiPrice);
     const bitfinexPrice = parseFloat(await getAsync('bitfinex')).toFixed(2);
-    console.log("bitfinexPrice: ", bitfinexPrice);
-    console.log("Max: ", _.max([coinbasePrice, geminiPrice, bitfinexPrice]));
+    //console.log("bitfinexPrice: ", bitfinexPrice);
+    //console.log("Max: ", _.max([coinbasePrice, geminiPrice, bitfinexPrice]));
     let opts = { format: '%s%v', code: 'USD', symbol: '$' }
-    console.log("Max formatted: ",  formatCurrency(_.max([coinbasePrice, geminiPrice, bitfinexPrice]), opts))
+    console.log("> Best: ",  formatCurrency(_.max([coinbasePrice, geminiPrice, bitfinexPrice]), opts))
     return _.max([coinbasePrice, geminiPrice, bitfinexPrice]);
 }
 
 eventEmitter.on('priceUpdate', () => {
-    let opts = { format: '%s%v', code: 'USD', symbol: '$' }
+    //let opts = { format: '%s%v', code: 'USD', symbol: '$' }
     if  (firstCoinbase && firstGemini && firstBitfinex) {
-        console.log("> Best: ", formatCurrency(getMaxPrice(), opts));
+        // for some reason the below is not working
+        //console.log("> Best: ", formatCurrency(getMaxPrice(), opts));
+        getMaxPrice();
     }
 })
 
