@@ -1,0 +1,35 @@
+{
+    "exchanges": [
+        {
+            "name": "coinbase",
+            "url": "wss://ws-feed.pro.coinbase.com",
+            "subscriptionMsg": {
+                "type": "subscribe",
+                "product_ids": [
+                    "BTC-USD"
+                ],
+                "channels": [
+                    {
+                        "name": "ticker",
+                        "product_ids": [
+                            "BTC-USD"
+                        ]
+                    }
+                ]
+            }
+        },
+        {
+            "name": "gemini",
+            "url": "wss://api.gemini.com/v1/marketdata/btcusd"
+        },
+        {
+            "name": "bitfinex",
+            "url": "wss://api.bitfinex.com/ws",
+            "subscriptionMsg": {
+                "event": "subscribe",
+                "channel": "ticker",
+                "symbol": "btcusd"
+            }
+        }
+    ]
+}
