@@ -8,7 +8,7 @@ var Exchange = function(name, url, subscriptionMsg) {
     let subMsg = JSON.stringify(subscriptionMsg);
     let ws = new WebSocket(url);
     ws.on('open', () => {
-        if (subMsg !== null || subMsg !== undefined) {
+        if (subMsg !== null && subMsg !== undefined) {
             ws.send(subMsg);
         }
     });
