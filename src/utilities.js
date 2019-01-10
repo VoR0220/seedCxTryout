@@ -29,7 +29,7 @@ function inputPriceToRedis(data, name) {
             break;
         case "bitfinex":
             // bitfinex returns a bit more data than we care about, the following is to handle that
-            if (_.isPlainObject(data) || data[1] == "hb") return;
+            if (_.isPlainObject(data) || data[1] == "hb" || data.length <= 8 || typeof data[7] !== 'number') return;
             firstBitfinex = true;
             // the 7th indice is where the price of the last trade is denoted
             client.set("bitfinex", data[7]);
@@ -47,17 +47,12 @@ async function getMaxPrice() {
     //console.log("geminiPrice: ", geminiPrice);
     const bitfinexPrice = parseFloat(await getAsync('bitfinex')).toFixed(2);
     //console.log("bitfinexPrice: ", bitfinexPrice);
-    //console.log("Max: ", _.max([coinbasePrice, geminiPrice, bitfinexPrice]));
     let opts = { format: '%s%v', code: 'USD', symbol: '$' }
     console.log("> Best: ",  formatCurrency(_.max([coinbasePrice, geminiPrice, bitfinexPrice]), opts))
-    return _.max([coinbasePrice, geminiPrice, bitfinexPrice]);
 }
 
-eventEmitter.on('priceUpdate', () => {
-    //let opts = { format: '%s%v', code: 'USD', symbol: '$' }
+eventEmitter.on('priceUpdate', async () => {
     if  (firstCoinbase && firstGemini && firstBitfinex) {
-        // for some reason the below is not working
-        //console.log("> Best: ", formatCurrency(getMaxPrice(), opts));
         getMaxPrice();
     }
 })

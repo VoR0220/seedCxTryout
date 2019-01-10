@@ -6,6 +6,12 @@ const redis = require("redis"),
 const getAsync = promisify(client.get).bind(client);
 
 describe('websocket unit tests', (done) => {
+    beforeEach('flush the database',  (done) => {
+        client.flushall('ASYNC', (err, succeeded) => {
+            if (err) throw new Error('Problem in flushing the db: ', err)
+            done()
+        })
+    })
     it('should update redis properly', async() => {
         toTestUtils.inputPriceToRedis({price: 19.85}, 'coinbase');
         let expectedVal = await getAsync('coinbase');
