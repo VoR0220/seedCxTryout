@@ -47,14 +47,40 @@ async function getMaxPrice() {
     //console.log("geminiPrice: ", geminiPrice);
     const bitfinexPrice = parseFloat(await getAsync('bitfinex')).toFixed(2);
     //console.log("bitfinexPrice: ", bitfinexPrice);
+    
+    let bestPrice = _.max([coinbasePrice, geminiPrice, bitfinexPrice]);
+    // hack to ensure best price for our average (it's not unix-y but it'll work in lieu of this)
+    //appendToStringArray(bestPrice)
+    return bestPrice;
+}
+
+async function appendToStringArray(newBestPrice) {
+    let currentStringArr = await getAsync('averageBest');
+    if (currentStringArr  === null || currentStringArr === undefined) {
+        client.set("averageBest", newBestPrice);
+    } else {
+        let arr = currentStringArr.split(',');
+        arr.push(newBestPrice);
+        client.set("averageBest", arr.join(','));
+    }
+}
+
+async function getAvgBestPrice() {
+    let currentStringArr = await getAsync('averageBest');
+    let mean = _.mean(currentStringArr.split(',').map(parseFloat));
     let opts = { format: '%s%v', code: 'USD', symbol: '$' }
-    console.log("> Best: ",  formatCurrency(_.max([coinbasePrice, geminiPrice, bitfinexPrice]), opts))
+    console.log("> Avg Best: ", formatCurrency(mean, opts));
+    // clean up client
+    client.del('averageBest');
 }
 
 eventEmitter.on('priceUpdate', async () => {
     if  (firstCoinbase && firstGemini && firstBitfinex) {
-        getMaxPrice();
+        let bestPrice = await getMaxPrice();
+        appendToStringArray(bestPrice);
+        let opts = { format: '%s%v', code: 'USD', symbol: '$' }
+        console.log("> Best: ", formatCurrency(bestPrice, opts));
     }
 })
 
-module.exports = {inputPriceToRedis, getMaxPrice}
+module.exports = {inputPriceToRedis, getMaxPrice, getAvgBestPrice}

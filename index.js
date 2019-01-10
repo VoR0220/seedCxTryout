@@ -25,4 +25,8 @@ var jsonObj = JSON.parse(fs.readFileSync('config.json'));
  jsonObj["exchanges"].forEach(xchange => {
     new Exchange(xchange.name, xchange.url, xchange.subscriptionMsg);
 });
- 
+
+// every 30 seconds get the avg best price
+setInterval(async() => {
+    await utils.getAvgBestPrice();
+}, 30 * 1000);
